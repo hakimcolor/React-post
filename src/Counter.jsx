@@ -1,9 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
 const Counter = () => {
   const [count, setCount] = useState(0);
   const [post, setPost] = useState([]);
   const [input, setInput] = useState('');
+  const [isScrolled, setIsScrolled] = useState(false);
 
   // Count handlers
   const handleAdd = () => setCount(count + 1);
@@ -28,11 +29,29 @@ const Counter = () => {
     }
   };
 
+  // Detect Scroll for blur effect
+  useEffect(() => {
+    const handleScroll = () => {
+      if (window.scrollY > 50) {
+        setIsScrolled(true);
+      } else {
+        setIsScrolled(false);
+      }
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
   return (
     <>
       {/* Counter Section */}
       <div className="flex justify-center mt-5">
-        <div className="text-center">
+        <div
+          className={`text-center fixed z-50 p-4 rounded-lg transition duration-500 ${
+            isScrolled ? 'backdrop-blur-md bg-white/30 shadow-md' : ''
+          }`}
+        >
           <h1 className="text-2xl mb-4 font-bold">Count: {count}</h1>
           <button
             onClick={handleAdd}
@@ -56,24 +75,28 @@ const Counter = () => {
       </div>
 
       {/* Post Section */}
-      <div className="mt-5 flex flex-col items-center">
-        <div>
+      <div className="mt-5 flex flex-col items-center ">
+        <div
+          className={`fixed z-50 mt-32 p-2 rounded-lg transition duration-500 ${
+            isScrolled ? 'backdrop-blur-md bg-white/30 shadow-md' : ''
+          }`}
+        >
           <input
             type="text"
             placeholder="Write something..."
             value={input}
             onChange={(e) => setInput(e.target.value)}
-            className="p-2 border-black border-2 rounded-xl"
+            className="p-2 border-black border-2 rounded-xl "
           />
           <button
             onClick={handlePostAdd}
-            className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-400 hover:text-black transition duration-600 ml-2"
+            className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-400 hover:text-black transition duration-600 ml-2 "
           >
             Update the post
           </button>
         </div>
 
-        <div className="mt-5 w-[70%] flex flex-col items-center">
+        <div className="mt-60 w-[70%] flex flex-col items-center ">
           {post.map((p, index) => (
             <div
               key={index}
